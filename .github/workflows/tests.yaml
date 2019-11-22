@@ -1,0 +1,23 @@
+name: Tests
+on: push
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        version: [4.2.0.1873]
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v1
+      - name: Setup Node.js 12
+        uses: actions/setup-node@v1.2.0
+        with:
+          node-version: 12.x
+      - name: Install Sonar Scanner
+        run: node dist/index.js
+        env:
+          INPUT_VERSION: ${{ matrix.version }}
+      - name: Test Sonar Scanner CLI
+        run: sonar-scanner -h

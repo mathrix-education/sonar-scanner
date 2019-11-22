@@ -1,0 +1,13 @@
+name: Sonar Scanner
+author: Mathrix Education SA
+description: Sonar Scanner on Github Actions.
+branding:
+  #color: blue
+  #icon: upload-cloud
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
+inputs:
+  version:
+    description: The Sonar Scanner version.
+    required: true
