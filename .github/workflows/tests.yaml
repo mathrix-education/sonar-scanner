@@ -20,4 +20,4 @@ jobs:
         env:
           INPUT_VERSION: ${{ matrix.version }}
       - name: Test Sonar Scanner CLI
-        run: sonar-scanner -h
+        run: sonar-scanner --debug --version

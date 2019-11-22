@@ -3667,6 +3667,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
+const exec = __importStar(__webpack_require__(986));
 const tc = __importStar(__webpack_require__(533));
 const fs_1 = __webpack_require__(747);
 const path_1 = __webpack_require__(622);
@@ -3680,10 +3681,12 @@ function install() {
             const downloadLink = utils_1.getDownloadLink();
             const downloadPath = yield tc.downloadTool(downloadLink);
             const extractionPath = path_1.resolve(utils_1.getSonarScannerDirectory(), '..');
-            fs_1.renameSync(`sonar-scanner-${core.getInput('version')}`, 'sonar-scanner');
             yield tc.extractZip(downloadPath, extractionPath);
+            const versionedDirectory = path_1.resolve(utils_1.getSonarScannerDirectory(), '..', `sonar-scanner-${core.getInput('version')}`);
+            fs_1.renameSync(versionedDirectory, utils_1.getSonarScannerDirectory());
             const binPath = path_1.resolve(utils_1.getSonarScannerDirectory(), 'bin');
             core.addPath(binPath);
+            yield exec.exec('sonar-scanner --debug --version');
         }
         catch (e) {
             core.setFailed(e.message);
