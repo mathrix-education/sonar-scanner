@@ -26,8 +26,6 @@ jobs:
           echo "##[set-output name=current_branch;]${CURRENT_BRANCH}"
           echo "##[set-output name=parent_branch;]${PARENT_BRANCH}"
           echo "##[set-output name=version;]$(jq -r .version package.json)"
-
-          npm i typescript
       - name: Setup Node.js 12
         uses: actions/setup-node@v1.2.0
         with:

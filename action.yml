@@ -9,10 +9,12 @@ inputs:
     description: The Sonar Scanner version.
     required: true
   options:
-    description: Default Sonar Scanner options. This is a multi-line string (you may use the pipe '|' YAML operator).
+    description: Default Sonar Scanner options. Read as a YAML docuemnt (you may use the pipe '|' YAML operator).
     required: false
-  debug:
-    description: Run Sonar Scanner with the --debug (-X) flag.
+  typescript:
+    description: >
+      Install TypeScript during setup (simply run `npm i typescript`). Required if your project uses Typescript and if
+      the node module `typescript` is  not already installed.
     required: false
     default: false
   scan:

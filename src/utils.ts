@@ -18,18 +18,12 @@ export function isUbuntu(): boolean {
   return process.platform === 'linux';
 }
 
-export function getSonarScannerDirectory(): string {
-  if (isWindows()) {
-    return WINDOWS_INSTALL_PATH;
-  } else if (isUbuntu()) {
-    return UBUNTU_INSTALL_PATH;
-  } else {
-    const home = process.env.HOME ? process.env.HOME : process.cwd();
-    return resolve(home, INSTALL_DIRECTORY);
-  }
-}
-
-export async function sonar(args: string[]) {
+/**
+ * Run the sonar-scanner cli. This function is required inside the action itself since core.addPath only affect further
+ * steps.
+ * @param args The sonar-scanner arguments.
+ */
+export async function sonar(args: string[]): Promise<void> {
   const bin = resolve(
     getSonarScannerDirectory(),
     'bin',
@@ -41,4 +35,15 @@ export async function sonar(args: string[]) {
 export function getDownloadLink(): string {
   const version = core.getInput('version');
   return `https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${version}.zip`;
+}
+
+export function getSonarScannerDirectory(): string {
+  if (isWindows()) {
+    return WINDOWS_INSTALL_PATH;
+  } else if (isUbuntu()) {
+    return UBUNTU_INSTALL_PATH;
+  } else {
+    const home = process.env.HOME ? process.env.HOME : process.cwd();
+    return resolve(home, INSTALL_DIRECTORY);
+  }
 }

@@ -2147,6 +2147,23 @@ function isUbuntu() {
     return process.platform === 'linux';
 }
 exports.isUbuntu = isUbuntu;
+/**
+ * Run the sonar-scanner cli. This function is required inside the action itself since core.addPath only affect further
+ * steps.
+ * @param args The sonar-scanner arguments.
+ */
+function sonar(args) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const bin = path_1.resolve(getSonarScannerDirectory(), 'bin', 'sonar-scanner' + (isWindows() ? '.bat' : ''));
+        yield exec.exec(bin, args);
+    });
+}
+exports.sonar = sonar;
+function getDownloadLink() {
+    const version = core.getInput('version');
+    return `https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${version}.zip`;
+}
+exports.getDownloadLink = getDownloadLink;
 function getSonarScannerDirectory() {
     if (isWindows()) {
         return exports.WINDOWS_INSTALL_PATH;
@@ -2160,18 +2177,6 @@ function getSonarScannerDirectory() {
     }
 }
 exports.getSonarScannerDirectory = getSonarScannerDirectory;
-function sonar(args) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const bin = path_1.resolve(getSonarScannerDirectory(), 'bin', 'sonar-scanner' + (isWindows() ? '.bat' : ''));
-        yield exec.exec(bin, args);
-    });
-}
-exports.sonar = sonar;
-function getDownloadLink() {
-    const version = core.getInput('version');
-    return `https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${version}.zip`;
-}
-exports.getDownloadLink = getDownloadLink;
 
 
 /***/ }),
@@ -7993,13 +7998,14 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
+const exec = __importStar(__webpack_require__(986));
 const tc = __importStar(__webpack_require__(533));
 const fs_1 = __webpack_require__(747);
 const path_1 = __webpack_require__(622);
 const yaml_1 = __webpack_require__(521);
 const utils_1 = __webpack_require__(163);
 /**
- * Install the Google Cloud SDK.
+ * Install Sonar Scanner
  */
 function install() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -8020,6 +8026,10 @@ function install() {
                 .join('\n');
             const sonarScannerPropertiesPath = path_1.resolve(utils_1.getSonarScannerDirectory(), 'conf', 'sonar-scanner.properties');
             fs_1.appendFileSync(sonarScannerPropertiesPath, buffer);
+        }
+        // Install TypeScript if necessary
+        if (core.getInput('typescript').toLowerCase() === 'true') {
+            yield exec.exec('npm i typescript');
         }
         // Run Sonar Scanner
         if (core.getInput('scan').toLowerCase() === 'true') {

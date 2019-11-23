@@ -1,4 +1,5 @@
 import * as core from '@actions/core';
+import * as exec from '@actions/exec';
 import * as tc from '@actions/tool-cache';
 import { appendFileSync, renameSync } from 'fs';
 import { resolve } from 'path';
@@ -6,7 +7,7 @@ import { parse } from 'yaml';
 import { getDownloadLink, getSonarScannerDirectory, sonar } from './utils';
 
 /**
- * Install the Google Cloud SDK.
+ * Install Sonar Scanner
  */
 export async function install(): Promise<void> {
   // Download the archive
@@ -37,6 +38,11 @@ export async function install(): Promise<void> {
       'sonar-scanner.properties',
     );
     appendFileSync(sonarScannerPropertiesPath, buffer);
+  }
+
+  // Install TypeScript if necessary
+  if (core.getInput('typescript').toLowerCase() === 'true') {
+    await exec.exec('npm i typescript');
   }
 
   // Run Sonar Scanner
