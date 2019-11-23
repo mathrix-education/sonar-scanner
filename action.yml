@@ -1,6 +1,9 @@
-name: Sonar Scanner
+name: Scan with Sonar Scanner
 author: Mathrix Education SA
 description: Sonar Scanner on Github Actions.
+branding:
+  color: gray-dark
+  icon: upload-cloud
 runs:
   using: 'node12'
   main: 'dist/index.js'
@@ -9,7 +12,7 @@ inputs:
     description: The Sonar Scanner version.
     required: true
   options:
-    description: Default Sonar Scanner options. Read as a YAML docuemnt (you may use the pipe '|' YAML operator).
+    description: Default Sonar Scanner options. Read as a YAML document (you may use the pipe '|' YAML operator).
     required: false
   typescript:
     description: >
