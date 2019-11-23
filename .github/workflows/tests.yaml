@@ -34,8 +34,9 @@ jobs:
         run: node dist/index.js
         env:
           INPUT_VERSION: ${{ matrix.version }}
-          INPUT_OPTIONS: |
+          INPUT_OPTIONS: |-
             sonar.host.url: you.sonarqube.com
+            sonar.login: no token
           INPUT_SCAN: ${{ matrix.os == 'ubuntu-latest' }}
           INPUT_ARGS: >-
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
