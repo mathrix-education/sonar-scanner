@@ -30,7 +30,7 @@ jobs:
         uses: actions/setup-node@v1.2.0
         with:
           node-version: 12.x
-      - name: Install Sonar Scanner
+      - name: Run Sonar Scanner
         run: node dist/index.js
         env:
           INPUT_VERSION: ${{ matrix.version }}
@@ -43,3 +43,5 @@ jobs:
             -Dsonar.projectVersion=${{ steps.context.outputs.version }}
             -Dsonar.branch.name=${{ steps.context.outputs.current_branch }}
             -Dsonar.branch.target=${{ steps.context.outputs.parent_branch }}
+      - name: Print Sonar Scanner version
+        run: sonar-scanner --debug --version
