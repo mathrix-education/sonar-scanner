@@ -3,6 +3,7 @@ import * as tc from '@actions/tool-cache';
 import { renameSync } from 'fs';
 import { resolve } from 'path';
 import { getDownloadLink, getSonarScannerDirectory, sonar } from './utils';
+import { parse } from 'yaml';
 
 /**
  * Install the Google Cloud SDK.
@@ -22,6 +23,12 @@ export async function install(): Promise<void> {
   renameSync(versionedDirectory, getSonarScannerDirectory());
 
   core.addPath(resolve(getSonarScannerDirectory(), 'bin'));
+
+  // Add default options
+  if (core.getInput('options')) {
+    const options = parse(core.getInput('options'));
+    console.log(options);
+  }
 
   // Run Sonar Scanner
   if (core.getInput('scan')) {
