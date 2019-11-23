@@ -1,9 +1,6 @@
 name: Sonar Scanner
 author: Mathrix Education SA
 description: Sonar Scanner on Github Actions.
-branding:
-  #color: blue
-  #icon: upload-cloud
 runs:
   using: 'node12'
   main: 'dist/index.js'
@@ -11,3 +8,17 @@ inputs:
   version:
     description: The Sonar Scanner version.
     required: true
+  options:
+    description: Default Sonar Scanner options. This is a multi-line string (you may use the pipe '|' YAML operator).
+    required: false
+  debug:
+    description: Run Sonar Scanner with the --debug (-X) flag.
+    required: false
+    default: false
+  scan:
+    description: Run Sonar Scanner immediately in the current working directory.
+    required: false
+    default: false
+  flags:
+    description: Additionnal flag to append during the scan. Ignored if `scan` is false.
+    required: false

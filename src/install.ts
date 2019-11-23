@@ -3,40 +3,36 @@ import * as exec from '@actions/exec';
 import * as tc from '@actions/tool-cache';
 import { renameSync } from 'fs';
 import { resolve } from 'path';
-import { getDownloadLink, getSonarScannerDirectory } from './utils';
+import { getDownloadLink, getSonarScannerDirectory, sonar } from './utils';
 
 /**
  * Install the Google Cloud SDK.
  */
 export async function install(): Promise<void> {
-  try {
-    const downloadLink = getDownloadLink();
-    const downloadPath = await tc.downloadTool(downloadLink);
-    const extractionPath = resolve(getSonarScannerDirectory(), '..');
+  // Download the archive
+  const downloadLink = getDownloadLink();
+  const downloadPath = await tc.downloadTool(downloadLink);
+  const extractionPath = resolve(getSonarScannerDirectory(), '..');
+  const versionedDirectory = resolve(
+    extractionPath,
+    `sonar-scanner-${core.getInput('version')}`,
+  );
 
-    await tc.extractZip(downloadPath, extractionPath);
+  // Extract, normalize and register binaries
+  await tc.extractZip(downloadPath, extractionPath);
+  renameSync(versionedDirectory, getSonarScannerDirectory());
 
-    const versionedDirectory = resolve(
-      getSonarScannerDirectory(),
-      '..',
-      `sonar-scanner-${core.getInput('version')}`,
-    );
+  core.addPath(resolve(getSonarScannerDirectory(), 'bin'));
 
-    renameSync(versionedDirectory, getSonarScannerDirectory());
-
-    const binPath = resolve(getSonarScannerDirectory(), 'bin');
-    core.addPath(binPath);
-
-    await exec.exec('sonar-scanner --debug --version');
-  } catch (e) {
-    core.setFailed(e.message);
-  }
+  // Run Sonar Scanner
+  await sonar(['--debug', '--version']);
 }
 
 install()
   .then(() => {
     core.info('Installation succeeded');
   })
-  .catch(() => {
+  .catch(e => {
     core.error('Installation failed');
+    core.setFailed(e.message);
   });

@@ -19,5 +19,10 @@ jobs:
         run: node dist/index.js
         env:
           INPUT_VERSION: ${{ matrix.version }}
+          INPUT_OPTIONS: |
+            sonar.host.url: test1
+            sonar.login: test2
+            sonar.projectBaseDir: .
       - name: Test Sonar Scanner CLI
         run: sonar-scanner --debug --version
+

@@ -1217,6 +1217,15 @@ exports.debug = debug; // for test
 
 "use strict";
 
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -1226,6 +1235,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
+const exec = __importStar(__webpack_require__(986));
 const path_1 = __webpack_require__(622);
 exports.INSTALL_DIRECTORY = 'sonar-scanner';
 exports.WINDOWS_INSTALL_PATH = `C:\\${exports.INSTALL_DIRECTORY}`;
@@ -1255,6 +1265,13 @@ function getSonarScannerDirectory() {
     }
 }
 exports.getSonarScannerDirectory = getSonarScannerDirectory;
+function sonar(args) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const bin = path_1.resolve(getSonarScannerDirectory(), 'bin', 'sonar-scanner' + (isWindows() ? '.bat' : ''));
+        yield exec.exec(bin, args);
+    });
+}
+exports.sonar = sonar;
 function getDownloadLink() {
     const version = core.getInput('version');
     return `https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${version}.zip`;
@@ -3667,7 +3684,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
-const exec = __importStar(__webpack_require__(986));
 const tc = __importStar(__webpack_require__(533));
 const fs_1 = __webpack_require__(747);
 const path_1 = __webpack_require__(622);
@@ -3677,20 +3693,17 @@ const utils_1 = __webpack_require__(163);
  */
 function install() {
     return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const downloadLink = utils_1.getDownloadLink();
-            const downloadPath = yield tc.downloadTool(downloadLink);
-            const extractionPath = path_1.resolve(utils_1.getSonarScannerDirectory(), '..');
-            yield tc.extractZip(downloadPath, extractionPath);
-            const versionedDirectory = path_1.resolve(utils_1.getSonarScannerDirectory(), '..', `sonar-scanner-${core.getInput('version')}`);
-            fs_1.renameSync(versionedDirectory, utils_1.getSonarScannerDirectory());
-            const binPath = path_1.resolve(utils_1.getSonarScannerDirectory(), 'bin');
-            core.addPath(binPath);
-            yield exec.exec('sonar-scanner --debug --version');
-        }
-        catch (e) {
-            core.setFailed(e.message);
-        }
+        // Download the archive
+        const downloadLink = utils_1.getDownloadLink();
+        const downloadPath = yield tc.downloadTool(downloadLink);
+        const extractionPath = path_1.resolve(utils_1.getSonarScannerDirectory(), '..');
+        const versionedDirectory = path_1.resolve(extractionPath, `sonar-scanner-${core.getInput('version')}`);
+        // Extract, normalize and register binaries
+        yield tc.extractZip(downloadPath, extractionPath);
+        fs_1.renameSync(versionedDirectory, utils_1.getSonarScannerDirectory());
+        core.addPath(path_1.resolve(utils_1.getSonarScannerDirectory(), 'bin'));
+        // Run Sonar Scanner
+        yield utils_1.sonar(['--debug', '--version']);
     });
 }
 exports.install = install;
@@ -3698,8 +3711,9 @@ install()
     .then(() => {
     core.info('Installation succeeded');
 })
-    .catch(() => {
+    .catch((e) => {
     core.error('Installation failed');
+    core.setFailed(e.message);
 });
 
 

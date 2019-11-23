@@ -1,4 +1,5 @@
 import * as core from '@actions/core';
+import * as exec from '@actions/exec';
 import { resolve } from 'path';
 
 export const INSTALL_DIRECTORY = 'sonar-scanner';
@@ -26,6 +27,15 @@ export function getSonarScannerDirectory(): string {
     const home = process.env.HOME ? process.env.HOME : process.cwd();
     return resolve(home, INSTALL_DIRECTORY);
   }
+}
+
+export async function sonar(args: string[]) {
+  const bin = resolve(
+    getSonarScannerDirectory(),
+    'bin',
+    'sonar-scanner' + (isWindows() ? '.bat' : ''),
+  );
+  await exec.exec(bin, args);
 }
 
 export function getDownloadLink(): string {
