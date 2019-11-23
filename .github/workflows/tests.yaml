@@ -37,6 +37,7 @@ jobs:
           INPUT_OPTIONS: |-
             sonar.host.url: you.sonarqube.com
             sonar.login: no token
+          INPUT_TYPESCRIPT: ${{ matrix.os == 'ubuntu-latest' }}
           INPUT_SCAN: ${{ matrix.os == 'ubuntu-latest' }}
           INPUT_ARGS: >-
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
