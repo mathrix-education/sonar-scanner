@@ -3703,7 +3703,10 @@ function install() {
         fs_1.renameSync(versionedDirectory, utils_1.getSonarScannerDirectory());
         core.addPath(path_1.resolve(utils_1.getSonarScannerDirectory(), 'bin'));
         // Run Sonar Scanner
-        yield utils_1.sonar(['--debug', '--version']);
+        if (core.getInput('scan')) {
+            const args = core.getInput('args').split(' ');
+            yield utils_1.sonar(args);
+        }
     });
 }
 exports.install = install;
@@ -3711,7 +3714,7 @@ install()
     .then(() => {
     core.info('Installation succeeded');
 })
-    .catch((e) => {
+    .catch(e => {
     core.error('Installation failed');
     core.setFailed(e.message);
 });

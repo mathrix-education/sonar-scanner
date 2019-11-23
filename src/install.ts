@@ -1,5 +1,4 @@
 import * as core from '@actions/core';
-import * as exec from '@actions/exec';
 import * as tc from '@actions/tool-cache';
 import { renameSync } from 'fs';
 import { resolve } from 'path';
@@ -25,7 +24,10 @@ export async function install(): Promise<void> {
   core.addPath(resolve(getSonarScannerDirectory(), 'bin'));
 
   // Run Sonar Scanner
-  await sonar(['--debug', '--version']);
+  if (core.getInput('scan')) {
+    const args = core.getInput('args').split(' ');
+    await sonar(args);
+  }
 }
 
 install()

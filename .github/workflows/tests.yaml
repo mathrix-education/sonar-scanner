@@ -23,6 +23,8 @@ jobs:
             sonar.host.url: test1
             sonar.login: test2
             sonar.projectBaseDir: .
+          INPUT_SCAN: true
+          INPUT_ARGS: --debug --version
       - name: Test Sonar Scanner CLI
         run: sonar-scanner --debug --version
 

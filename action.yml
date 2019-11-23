@@ -19,6 +19,6 @@ inputs:
     description: Run Sonar Scanner immediately in the current working directory.
     required: false
     default: false
-  flags:
+  args:
     description: Additionnal flag to append during the scan. Ignored if `scan` is false.
     required: false
