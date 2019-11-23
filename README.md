@@ -21,6 +21,18 @@ Sonar Scanner on every platform by using the provided JDK.
 
 [2.1]: https://github.com/SonarSource/sonarcloud-github-action
 
+## Supported operating systems
+All operating systems provided by GitHub Actions are supported.
+The supported operating systems matrix is the following:
+
+| Operating system | Status |
+|------------------|-------|
+| `ubuntu-latest`  | ![3.1] |
+| `macos-latest`   | ![3.1] |
+| `windows-latest` | ![3.1] |
+
+[3.1]: https://img.shields.io/badge/status-supported-brightgreen
+
 ## Usage
 ### Inputs
 See [action.yml](action.yml) for details.
@@ -28,9 +40,9 @@ See [action.yml](action.yml) for details.
 #### version
 The `version` is required since it is used to download Sonar Scanner.
 You can find the available versions on the official Sonar Scanner
-[repository][3.1]
+[repository][3.2]
 
-[3.1]: https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/
+[3.2]: https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/
 
 #### options
 The `options` input will set the default sonar-project.properties values
