@@ -1,0 +1,26 @@
+name: Sonar Scanner
+author: Mathrix Education SA
+description: Sonar Scanner on Github Actions.
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
+inputs:
+  version:
+    description: The Sonar Scanner version.
+    required: true
+  options:
+    description: Default Sonar Scanner options. Read as a YAML docuemnt (you may use the pipe '|' YAML operator).
+    required: false
+  typescript:
+    description: >
+      Install TypeScript during setup (simply run `npm i typescript`). Required if your project uses Typescript and if
+      the node module `typescript` is  not already installed.
+    required: false
+    default: false
+  scan:
+    description: Run Sonar Scanner immediately in the current working directory.
+    required: false
+    default: false
+  args:
+    description: Additionnal flag to append during the scan. Ignored if `scan` is false.
+    required: false

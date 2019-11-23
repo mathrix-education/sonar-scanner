@@ -1,0 +1,49 @@
+name: Tests
+on:
+  push:
+    paths: ['**/*.ts', '**/*.js', '**/*.yml', '**/*.yaml']
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        version: [4.2.0.1873]
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v1
+      - name: Extract context
+        if: matrix.os == 'ubuntu-latest'
+        id: context
+        shell: bash
+        run: |
+          CURRENT_BRANCH="${GITHUB_REF#refs/heads/}"
+          [[ "$CURRENT_BRANCH" = "dev" ]] && PARENT_BRANCH="master" || PARENT_BRANCH="dev"
+
+          git checkout "${CURRENT_BRANCH}"
+
+          echo "##[set-output name=current_branch;]${CURRENT_BRANCH}"
+          echo "##[set-output name=parent_branch;]${PARENT_BRANCH}"
+          echo "##[set-output name=version;]$(jq -r .version package.json)"
+      - name: Setup Node.js 12
+        uses: actions/setup-node@v1.2.0
+        with:
+          node-version: 12.x
+      - name: Run Sonar Scanner
+        run: node dist/index.js
+        env:
+          INPUT_VERSION: ${{ matrix.version }}
+          INPUT_OPTIONS: |-
+            sonar.host.url=you.sonarqube.com
+            sonar.login=no token
+          INPUT_TYPESCRIPT: ${{ matrix.os == 'ubuntu-latest' }}
+          INPUT_SCAN: ${{ matrix.os == 'ubuntu-latest' }}
+          INPUT_ARGS: >-
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+            -Dsonar.host.url=${{ secrets.SONAR_HOST }}
+            -Dsonar.projectVersion=${{ steps.context.outputs.version }}
+            -Dsonar.branch.name=${{ steps.context.outputs.current_branch }}
+            -Dsonar.branch.target=${{ steps.context.outputs.parent_branch }}
+      - name: Print Sonar Scanner version
+        run: sonar-scanner --debug --version

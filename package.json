@@ -1,0 +1,50 @@
+{
+  "name": "@mathrix-education/sonar-scanner",
+  "version": "0.1.0",
+  "description": "Small GitHub action to install the Sonar Scanner on workflow.",
+  "keywords": [
+    "github-actions",
+    "actions",
+    "sonar",
+    "sonar-scanner",
+    "sonarqube "
+  ],
+  "homepage": "https://github.com/mathrix-education/sonar-scanner#readme",
+  "bugs": {
+    "url": "https://github.com/mathrix-education/sonar-scanner/issues",
+    "email": "mathieux@mathrix.fr"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Mathieu Bour",
+    "email": "mathieu@mathrix.fr",
+    "url": "https://github.com/mathieu-bour"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mathrix-education/sonar-scanner.git"
+  },
+  "scripts": {
+    "format": "prettier --write \"src/**/*.ts\" \"*.js\"",
+    "build": "ncc build src/install.ts"
+  },
+  "dependencies": {
+    "@actions/core": "^1.2.0",
+    "@actions/exec": "^1.0.1",
+    "@actions/tool-cache": "^1.1.2",
+    "original-fs": "^1.1.0",
+    "typescript": "^3.7.2"
+  },
+  "devDependencies": {
+    "@types/node": "^12.12.8",
+    "@typescript-eslint/eslint-plugin": "^2.8.0",
+    "@typescript-eslint/parser": "^2.8.0",
+    "@zeit/ncc": "^0.20.5",
+    "eslint": "^6.6.0",
+    "eslint-config-prettier": "^6.7.0",
+    "eslint-plugin-prettier": "^3.1.1",
+    "husky": "^3.1.0",
+    "prettier": "^1.19.1"
+  },
+  "private": true
+}
