@@ -11,6 +11,21 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v1
+      - name: Extract context
+        if: matrix.os == 'ubuntu-latest'
+        id: context
+        shell: bash
+        run: |
+          CURRENT_BRANCH="${GITHUB_REF#refs/heads/}"
+          [[ "$CURRENT_BRANCH" = "dev" ]] && PARENT_BRANCH="master" || PARENT_BRANCH="dev"
+
+          git checkout "${CURRENT_BRANCH}"
+
+          echo "##[set-output name=current_branch;]${CURRENT_BRANCH}"
+          echo "##[set-output name=parent_branch;]${PARENT_BRANCH}"
+          echo "##[set-output name=version;]$(jq -r .version package.json)"
+
+          npm i typescript
       - name: Setup Node.js 12
         uses: actions/setup-node@v1.2.0
         with:
@@ -20,11 +35,11 @@ jobs:
         env:
           INPUT_VERSION: ${{ matrix.version }}
           INPUT_OPTIONS: |
-            sonar.host.url: test1
-            sonar.login: test2
-            sonar.projectBaseDir: .
-          INPUT_SCAN: true
-          INPUT_ARGS: --debug --version
-      - name: Test Sonar Scanner CLI
-        run: sonar-scanner --debug --version
-
+            sonar.host.url: you.sonarqube.com
+          INPUT_SCAN: ${{ matrix.os == 'ubuntu-latest' }}
+          INPUT_ARGS: >-
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+            -Dsonar.host.url=${{ secrets.SONAR_HOST }}
+            -Dsonar.projectVersion=${{ steps.context.outputs.version }}
+            -Dsonar.branch.name=${{ steps.context.outputs.current_branch }}
+            -Dsonar.branch.target=${{ steps.context.outputs.parent_branch }}

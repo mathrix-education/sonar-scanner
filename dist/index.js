@@ -7996,8 +7996,8 @@ const core = __importStar(__webpack_require__(470));
 const tc = __importStar(__webpack_require__(533));
 const fs_1 = __webpack_require__(747);
 const path_1 = __webpack_require__(622);
-const utils_1 = __webpack_require__(163);
 const yaml_1 = __webpack_require__(521);
+const utils_1 = __webpack_require__(163);
 /**
  * Install the Google Cloud SDK.
  */
@@ -8015,10 +8015,14 @@ function install() {
         // Add default options
         if (core.getInput('options')) {
             const options = yaml_1.parse(core.getInput('options'));
-            console.log(options);
+            const buffer = Object.keys(options)
+                .map((key) => key + '=' + options[key])
+                .join('\n');
+            const sonarScannerPropertiesPath = path_1.resolve(utils_1.getSonarScannerDirectory(), 'conf', 'sonar-scanner.properties');
+            fs_1.appendFileSync(sonarScannerPropertiesPath, buffer);
         }
         // Run Sonar Scanner
-        if (core.getInput('scan')) {
+        if (core.getInput('scan').toLowerCase() === 'true') {
             const args = core.getInput('args').split(' ');
             yield utils_1.sonar(args);
         }
