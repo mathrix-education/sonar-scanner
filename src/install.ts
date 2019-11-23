@@ -3,7 +3,6 @@ import * as exec from '@actions/exec';
 import * as tc from '@actions/tool-cache';
 import { appendFileSync, renameSync } from 'fs';
 import { resolve } from 'path';
-import { parse } from 'yaml';
 import { getDownloadLink, getSonarScannerDirectory, sonar } from './utils';
 
 /**
@@ -26,18 +25,11 @@ export async function install(): Promise<void> {
   core.addPath(resolve(getSonarScannerDirectory(), 'bin'));
 
   // Add default options
-  if (core.getInput('options')) {
-    const options = parse(core.getInput('options'));
-    const buffer = Object.keys(options)
-      .map((key: string) => key + '=' + options[key])
-      .join('\n');
-
-    const sonarScannerPropertiesPath = resolve(
-      getSonarScannerDirectory(),
-      'conf',
-      'sonar-scanner.properties',
+  if (core.getInput('options').length > 0) {
+    appendFileSync(
+      resolve(getSonarScannerDirectory(), 'conf', 'sonar-scanner.properties'),
+      core.getInput('options'),
     );
-    appendFileSync(sonarScannerPropertiesPath, buffer);
   }
 
   // Install TypeScript if necessary

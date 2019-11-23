@@ -33,12 +33,10 @@
     "@actions/exec": "^1.0.1",
     "@actions/tool-cache": "^1.1.2",
     "original-fs": "^1.1.0",
-    "typescript": "^3.7.2",
-    "yaml": "^1.7.2"
+    "typescript": "^3.7.2"
   },
   "devDependencies": {
     "@types/node": "^12.12.8",
-    "@types/yaml": "^1.2.0",
     "@typescript-eslint/eslint-plugin": "^2.8.0",
     "@typescript-eslint/parser": "^2.8.0",
     "@zeit/ncc": "^0.20.5",
