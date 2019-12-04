@@ -3714,7 +3714,7 @@ function install() {
         }
         // Install TypeScript if necessary
         if (core.getInput('typescript').toLowerCase() === 'true') {
-            yield exec.exec('npm i typescript');
+            yield exec.exec('npm install typescript --no-package-lock --no-save');
         }
         // Run Sonar Scanner
         if (core.getInput('scan').toLowerCase() === 'true') {
