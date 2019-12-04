@@ -33,8 +33,13 @@ export async function install(): Promise<void> {
   }
 
   // Install TypeScript if necessary
+  if (core.getInput('unshallow').toLowerCase() === 'true') {
+    await exec.exec('git fetch --unshallow');
+  }
+
+  // Install TypeScript if necessary
   if (core.getInput('typescript').toLowerCase() === 'true') {
-    await exec.exec('npm i typescript');
+    await exec.exec('npm install typescript --no-package-lock --no-save');
   }
 
   // Run Sonar Scanner

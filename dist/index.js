@@ -3713,8 +3713,12 @@ function install() {
             fs_1.appendFileSync(path_1.resolve(utils_1.getSonarScannerDirectory(), 'conf', 'sonar-scanner.properties'), core.getInput('options'));
         }
         // Install TypeScript if necessary
+        if (core.getInput('unshallow').toLowerCase() === 'true') {
+            yield exec.exec('git fetch --unshallow');
+        }
+        // Install TypeScript if necessary
         if (core.getInput('typescript').toLowerCase() === 'true') {
-            yield exec.exec('npm i typescript');
+            yield exec.exec('npm install typescript --no-package-lock --no-save');
         }
         // Run Sonar Scanner
         if (core.getInput('scan').toLowerCase() === 'true') {
