@@ -24,12 +24,12 @@ inputs:
       the node module `typescript` is  not already installed.
     required: false
     default: 'false'
-  scan:
-    description: Run Sonar Scanner immediately in the current working directory.
-    required: false
-    default: 'false'
   unshallow:
     description: Fetch a full clone of the repository. Useful when using the SCM feature of Sonar Scanner.
+    required: false
+    default: 'false'
+  scan:
+    description: Run Sonar Scanner immediately in the current working directory.
     required: false
     default: 'false'
   args:
