@@ -3982,7 +3982,7 @@ function isUnixExecutable(stats) {
 var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 const path_1 = __webpack_require__(622);
-exports.INSTALL_DIRECTORY = 'google-cloud-sdk';
+exports.INSTALL_DIRECTORY = 'sonar-scanner-cli';
 exports.UBUNTU_INSTALL_PATH = `/usr/lib/${exports.INSTALL_DIRECTORY}`;
 exports.MACOS_INSTALL_PATH = path_1.resolve((_a = process.env.HOME, (_a !== null && _a !== void 0 ? _a : process.cwd())), exports.INSTALL_DIRECTORY);
 exports.WINDOWS_INSTALL_PATH = `C:\\Program Files\\${exports.INSTALL_DIRECTORY}`;
