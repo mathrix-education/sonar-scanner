@@ -1309,7 +1309,10 @@ exports.isUbuntu = isUbuntu;
  */
 function sonar(args) {
     return __awaiter(this, void 0, void 0, function* () {
-        const bin = path_1.resolve(download_1.getSonarScannerDirectory(), 'bin', 'sonar-scanner' + (isWindows() ? '.bat' : ''));
+        let bin = path_1.resolve(download_1.getSonarScannerDirectory(), 'bin', 'sonar-scanner' + (isWindows() ? '.bat' : ''));
+        if (isWindows()) {
+            bin = bin.replace(download_1.getSonarScannerDirectory(), `"${download_1.getSonarScannerDirectory()}"`);
+        }
         yield exec.exec(bin, args);
     });
 }

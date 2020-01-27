@@ -20,6 +20,11 @@ export function isUbuntu(): boolean {
  * @param args The sonar-scanner arguments.
  */
 export async function sonar(args: string[]): Promise<void> {
-  const bin = resolve(getSonarScannerDirectory(), 'bin', 'sonar-scanner' + (isWindows() ? '.bat' : ''));
+  let bin = resolve(getSonarScannerDirectory(), 'bin', 'sonar-scanner' + (isWindows() ? '.bat' : ''));
+
+  if (isWindows()) {
+    bin = bin.replace(getSonarScannerDirectory(), `"${getSonarScannerDirectory()}"`);
+  }
+
   await exec.exec(bin, args);
 }
