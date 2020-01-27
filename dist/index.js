@@ -3254,6 +3254,12 @@ const exec = __importStar(__webpack_require__(986));
 const io = __importStar(__webpack_require__(1));
 const download_1 = __webpack_require__(725);
 const utils_1 = __webpack_require__(163);
+/**
+ * Setup the Sonar Scanner CLI, including:
+ * 1. Append the 'options' input to the default config file
+ * 2. Unshallow git repository if necessary
+ * 3. Install TypeScript if necessary
+ */
 function setup() {
     return __awaiter(this, void 0, void 0, function* () {
         core.addPath(path_1.resolve(download_1.getSonarScannerDirectory(), 'bin'));
@@ -3261,7 +3267,7 @@ function setup() {
         if (core.getInput('options') !== '') {
             const defaultConfFile = path_1.resolve(download_1.getSonarScannerDirectory(), 'conf', 'sonar-scanner.properties');
             if (utils_1.isUbuntu()) {
-                yield exec.exec(`sudo ${core.getInput('options')} >> ${defaultConfFile}`);
+                yield exec.exec(`sudo echo -n "${core.getInput('options')}" >> ${defaultConfFile}`);
             }
             else {
                 fs_1.appendFileSync(defaultConfFile, core.getInput('options'));
@@ -3284,11 +3290,6 @@ function setup() {
             if (fs_1.existsSync('package.json.tmp')) {
                 yield io.mv('package.json.tmp', 'package.json');
             }
-        }
-        // Run Sonar Scanner
-        if (core.getInput('scan').toLowerCase() === 'true') {
-            const args = core.getInput('args').split(' ');
-            yield utils_1.sonar(args);
         }
     });
 }

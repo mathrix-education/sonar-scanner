@@ -4,8 +4,14 @@ import * as core from '@actions/core';
 import * as exec from '@actions/exec';
 import * as io from '@actions/io';
 import { getSonarScannerDirectory } from './download';
-import { isUbuntu, sonar } from './utils';
+import { isUbuntu } from './utils';
 
+/**
+ * Setup the Sonar Scanner CLI, including:
+ * 1. Append the 'options' input to the default config file
+ * 2. Unshallow git repository if necessary
+ * 3. Install TypeScript if necessary
+ */
 export async function setup(): Promise<void> {
   core.addPath(resolve(getSonarScannerDirectory(), 'bin'));
 
@@ -14,7 +20,7 @@ export async function setup(): Promise<void> {
     const defaultConfFile = resolve(getSonarScannerDirectory(), 'conf', 'sonar-scanner.properties');
 
     if (isUbuntu()) {
-      await exec.exec(`sudo ${core.getInput('options')} >> ${defaultConfFile}`);
+      await exec.exec(`sudo echo -n "${core.getInput('options')}" >> ${defaultConfFile}`);
     } else {
       appendFileSync(defaultConfFile, core.getInput('options'));
     }
@@ -40,11 +46,5 @@ export async function setup(): Promise<void> {
     if (existsSync('package.json.tmp')) {
       await io.mv('package.json.tmp', 'package.json');
     }
-  }
-
-  // Run Sonar Scanner
-  if (core.getInput('scan').toLowerCase() === 'true') {
-    const args = core.getInput('args').split(' ');
-    await sonar(args);
   }
 }
