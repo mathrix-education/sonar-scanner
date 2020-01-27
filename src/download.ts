@@ -65,5 +65,5 @@ export async function download(): Promise<void> {
     await tc.extractZip(downloadPath, extractionPath);
   }
 
-  io.mv(`${extractionPath}/sonar-scanner-${core.getInput('version')}`, getSonarScannerDirectory());
+  await io.mv(`${extractionPath}/sonar-scanner-${core.getInput('version')}`, getSonarScannerDirectory());
 }

@@ -4109,7 +4109,7 @@ function download() {
             // Windows and MacOS: simply extract zip file
             yield tc.extractZip(downloadPath, extractionPath);
         }
-        io.mv(`${extractionPath}/sonar-scanner-${core.getInput('version')}`, getSonarScannerDirectory());
+        yield io.mv(`${extractionPath}/sonar-scanner-${core.getInput('version')}`, getSonarScannerDirectory());
     });
 }
 exports.download = download;
