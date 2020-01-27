@@ -4095,7 +4095,9 @@ function download() {
     return __awaiter(this, void 0, void 0, function* () {
         const downloadLink = getDownloadLink();
         const downloadPath = yield tc.downloadTool(downloadLink);
-        const extractionPath = path_1.resolve(getSonarScannerDirectory(), '..');
+        const targetPath = getSonarScannerDirectory();
+        const extractionPath = path_1.resolve(targetPath, '..');
+        const extractedPath = `${extractionPath}/sonar-scanner-${core.getInput('version')}`;
         if (!downloadLink.endsWith('.zip')) {
             // Should never be reached
             core.setFailed(`Unexpected extension (expected zip), but got ${downloadLink}`);
@@ -4104,12 +4106,13 @@ function download() {
             // Ubuntu: Remove the existing installation of Google Cloud SDK
             yield exec.exec(`sudo rm -rf ${constants_1.UBUNTU_INSTALL_PATH}`);
             yield exec.exec(`sudo unzip ${downloadPath} -d ${extractionPath}`);
+            yield exec.exec(`sudo mv ${extractedPath} ${targetPath}`);
         }
         else {
             // Windows and MacOS: simply extract zip file
             yield tc.extractZip(downloadPath, extractionPath);
+            yield io.mv(extractedPath, targetPath);
         }
-        yield io.mv(`${extractionPath}/sonar-scanner-${core.getInput('version')}`, getSonarScannerDirectory());
     });
 }
 exports.download = download;

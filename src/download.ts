@@ -49,7 +49,9 @@ export function getSonarScannerDirectory(): string {
 export async function download(): Promise<void> {
   const downloadLink = getDownloadLink();
   const downloadPath = await tc.downloadTool(downloadLink);
-  const extractionPath = resolve(getSonarScannerDirectory(), '..');
+  const targetPath = getSonarScannerDirectory();
+  const extractionPath = resolve(targetPath, '..');
+  const extractedPath = `${extractionPath}/sonar-scanner-${core.getInput('version')}`;
 
   if (!downloadLink.endsWith('.zip')) {
     // Should never be reached
@@ -60,10 +62,10 @@ export async function download(): Promise<void> {
     // Ubuntu: Remove the existing installation of Google Cloud SDK
     await exec.exec(`sudo rm -rf ${UBUNTU_INSTALL_PATH}`);
     await exec.exec(`sudo unzip ${downloadPath} -d ${extractionPath}`);
+    await exec.exec(`sudo mv ${extractedPath} ${targetPath}`);
   } else {
     // Windows and MacOS: simply extract zip file
     await tc.extractZip(downloadPath, extractionPath);
+    await io.mv(extractedPath, targetPath);
   }
-
-  await io.mv(`${extractionPath}/sonar-scanner-${core.getInput('version')}`, getSonarScannerDirectory());
 }
