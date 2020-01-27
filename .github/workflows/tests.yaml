@@ -9,6 +9,13 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
         with-jre: [false, true]
         version: [4.2.0.1873]
+        exclude:
+          - os: macos-latest
+            with-jre: false
+            version: 4.2.0.1873
+          - os: windows-latest
+            with-jre: false
+            version: 4.2.0.1873
       fail-fast: false
     runs-on: ${{ matrix.os }}
     steps:
