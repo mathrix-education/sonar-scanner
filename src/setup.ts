@@ -4,7 +4,7 @@ import * as core from '@actions/core';
 import * as exec from '@actions/exec';
 import * as io from '@actions/io';
 import { getSonarScannerDirectory } from './download';
-import { sonar } from './utils';
+import { isUbuntu, sonar } from './utils';
 
 export async function setup(): Promise<void> {
   core.addPath(resolve(getSonarScannerDirectory(), 'bin'));
@@ -12,7 +12,12 @@ export async function setup(): Promise<void> {
   // Add default options
   if (core.getInput('options') !== '') {
     const defaultConfFile = resolve(getSonarScannerDirectory(), 'conf', 'sonar-scanner.properties');
-    appendFileSync(defaultConfFile, core.getInput('options'));
+
+    if (isUbuntu()) {
+      await exec.exec(`sudo ${core.getInput('options')} >> ${defaultConfFile}`);
+    } else {
+      appendFileSync(defaultConfFile, core.getInput('options'));
+    }
   }
 
   // Unshallow the git repository if necessary

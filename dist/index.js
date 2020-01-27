@@ -3260,7 +3260,12 @@ function setup() {
         // Add default options
         if (core.getInput('options') !== '') {
             const defaultConfFile = path_1.resolve(download_1.getSonarScannerDirectory(), 'conf', 'sonar-scanner.properties');
-            fs_1.appendFileSync(defaultConfFile, core.getInput('options'));
+            if (utils_1.isUbuntu()) {
+                yield exec.exec(`sudo ${core.getInput('options')} >> ${defaultConfFile}`);
+            }
+            else {
+                fs_1.appendFileSync(defaultConfFile, core.getInput('options'));
+            }
         }
         // Unshallow the git repository if necessary
         if (core.getInput('unshallow').toLowerCase() === 'true') {
