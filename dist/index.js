@@ -4045,6 +4045,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
 const exec = __importStar(__webpack_require__(986));
+const io = __importStar(__webpack_require__(1));
 const tc = __importStar(__webpack_require__(533));
 const path_1 = __webpack_require__(622);
 const constants_1 = __webpack_require__(694);
@@ -4108,6 +4109,7 @@ function download() {
             // Windows and MacOS: simply extract zip file
             yield tc.extractZip(downloadPath, extractionPath);
         }
+        io.mv(`${extractionPath}/sonar-scanner-${core.getInput('version')}`, getSonarScannerDirectory());
     });
 }
 exports.download = download;

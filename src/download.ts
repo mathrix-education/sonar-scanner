@@ -1,7 +1,9 @@
 import * as core from '@actions/core';
 import * as exec from '@actions/exec';
+import * as io from '@actions/io';
 import * as tc from '@actions/tool-cache';
 import { resolve } from 'path';
+import { version } from 'punycode';
 import { MACOS_INSTALL_PATH, UBUNTU_INSTALL_PATH, WINDOWS_INSTALL_PATH } from './constants';
 import { isMacOS, isUbuntu, isWindows } from './utils';
 
@@ -62,4 +64,6 @@ export async function download(): Promise<void> {
     // Windows and MacOS: simply extract zip file
     await tc.extractZip(downloadPath, extractionPath);
   }
+
+  io.mv(`${extractionPath}/sonar-scanner-${core.getInput('version')}`, getSonarScannerDirectory());
 }
