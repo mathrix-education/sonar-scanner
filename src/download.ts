@@ -3,7 +3,6 @@ import * as exec from '@actions/exec';
 import * as io from '@actions/io';
 import * as tc from '@actions/tool-cache';
 import { resolve } from 'path';
-import { version } from 'punycode';
 import { MACOS_INSTALL_PATH, UBUNTU_INSTALL_PATH, WINDOWS_INSTALL_PATH } from './constants';
 import { isMacOS, isUbuntu, isWindows } from './utils';
 
