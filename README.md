@@ -1,4 +1,11 @@
 # @mathrix-education/sonar-scanner
+
+![Workflow status][workflow]
+![Latest release][latest-release]
+
+[workflow]: https://img.shields.io/github/workflow/status/mathrix-education/sonar-scanner/Tests?style=flat-square
+[latest-release]: https://img.shields.io/github/v/release/mathrix-education/sonar-scanner?label=latest%20release&style=flat-square
+
 Install the Sonar Scanner CLI in GitHub Actions workflow.
 
 This project is **not supported** by Sonar Cloud.
