@@ -34,7 +34,7 @@ module.exports =
 /******/ 	// the startup function
 /******/ 	function startup() {
 /******/ 		// Load entry module and return exports
-/******/ 		return __webpack_require__(655);
+/******/ 		return __webpack_require__(131);
 /******/ 	};
 /******/
 /******/ 	// run startup
@@ -942,6 +942,59 @@ module.exports = require("child_process");
 
 /***/ }),
 
+/***/ 131:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const core = __importStar(__webpack_require__(470));
+const download_1 = __webpack_require__(725);
+const setup_1 = __webpack_require__(526);
+const utils_1 = __webpack_require__(163);
+/**
+ * Install the Sonar Scanner CLI.
+ */
+function main() {
+    return __awaiter(this, void 0, void 0, function* () {
+        yield download_1.download();
+        yield setup_1.setup();
+        // Run Sonar Scanner
+        if (core.getInput('scan').toLowerCase() === 'true') {
+            const args = core.getInput('args').split(' ');
+            yield utils_1.sonar(args);
+        }
+    });
+}
+exports.main = main;
+main()
+    .then(() => {
+    core.info('Installation succeeded');
+})
+    .catch(e => {
+    core.error('Installation failed');
+    core.setFailed(e.message);
+});
+
+
+/***/ }),
+
 /***/ 139:
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
@@ -1234,12 +1287,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const core = __importStar(__webpack_require__(470));
 const exec = __importStar(__webpack_require__(986));
 const path_1 = __webpack_require__(622);
-exports.INSTALL_DIRECTORY = 'sonar-scanner';
-exports.WINDOWS_INSTALL_PATH = `C:\\${exports.INSTALL_DIRECTORY}`;
-exports.UBUNTU_INSTALL_PATH = `/home/runner/${exports.INSTALL_DIRECTORY}`;
+const download_1 = __webpack_require__(725);
 function isWindows() {
     return process.platform === 'win32';
 }
@@ -1259,29 +1309,14 @@ exports.isUbuntu = isUbuntu;
  */
 function sonar(args) {
     return __awaiter(this, void 0, void 0, function* () {
-        const bin = path_1.resolve(getSonarScannerDirectory(), 'bin', 'sonar-scanner' + (isWindows() ? '.bat' : ''));
+        let bin = path_1.resolve(download_1.getSonarScannerDirectory(), 'bin', 'sonar-scanner' + (isWindows() ? '.bat' : ''));
+        if (isWindows()) {
+            bin = bin.replace(download_1.getSonarScannerDirectory(), `"${download_1.getSonarScannerDirectory()}"`);
+        }
         yield exec.exec(bin, args);
     });
 }
 exports.sonar = sonar;
-function getDownloadLink() {
-    const version = core.getInput('version');
-    return `https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${version}.zip`;
-}
-exports.getDownloadLink = getDownloadLink;
-function getSonarScannerDirectory() {
-    if (isWindows()) {
-        return exports.WINDOWS_INSTALL_PATH;
-    }
-    else if (isUbuntu()) {
-        return exports.UBUNTU_INSTALL_PATH;
-    }
-    else {
-        const home = process.env.HOME ? process.env.HOME : process.cwd();
-        return path_1.resolve(home, exports.INSTALL_DIRECTORY);
-    }
-}
-exports.getSonarScannerDirectory = getSonarScannerDirectory;
 
 
 /***/ }),
@@ -3193,6 +3228,79 @@ exports.getState = getState;
 
 /***/ }),
 
+/***/ 526:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const fs_1 = __webpack_require__(747);
+const path_1 = __webpack_require__(622);
+const core = __importStar(__webpack_require__(470));
+const exec = __importStar(__webpack_require__(986));
+const io = __importStar(__webpack_require__(1));
+const download_1 = __webpack_require__(725);
+const utils_1 = __webpack_require__(163);
+/**
+ * Setup the Sonar Scanner CLI, including:
+ * 1. Append the 'options' input to the default config file
+ * 2. Unshallow git repository if necessary
+ * 3. Install TypeScript if necessary
+ */
+function setup() {
+    return __awaiter(this, void 0, void 0, function* () {
+        core.addPath(path_1.resolve(download_1.getSonarScannerDirectory(), 'bin'));
+        // Add default options
+        if (core.getInput('options') !== '') {
+            const defaultConfFile = path_1.resolve(download_1.getSonarScannerDirectory(), 'conf', 'sonar-scanner.properties');
+            if (utils_1.isUbuntu()) {
+                yield exec.exec(`sudo echo -n "${core.getInput('options')}" >> ${defaultConfFile}`);
+            }
+            else {
+                fs_1.appendFileSync(defaultConfFile, core.getInput('options'));
+            }
+        }
+        // Unshallow the git repository if necessary
+        if (core.getInput('unshallow').toLowerCase() === 'true') {
+            yield exec.exec('git fetch --unshallow');
+        }
+        // Install TypeScript if necessary
+        if (core.getInput('typescript').toLowerCase() === 'true') {
+            /*
+             * If a package.json exists, running npm install will install all packages
+             * which is not desirable. We will temperately move package.json.
+             */
+            if (fs_1.existsSync('package.json')) {
+                yield io.mv('package.json', 'package.json.tmp');
+            }
+            yield exec.exec('npm install typescript --no-package-lock --no-save');
+            if (fs_1.existsSync('package.json.tmp')) {
+                yield io.mv('package.json.tmp', 'package.json');
+            }
+        }
+    });
+}
+exports.setup = setup;
+
+
+/***/ }),
+
 /***/ 533:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
@@ -3666,80 +3774,6 @@ module.exports = require("net");
 
 /***/ }),
 
-/***/ 655:
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
-
-"use strict";
-
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const core = __importStar(__webpack_require__(470));
-const exec = __importStar(__webpack_require__(986));
-const tc = __importStar(__webpack_require__(533));
-const fs_1 = __webpack_require__(747);
-const path_1 = __webpack_require__(622);
-const utils_1 = __webpack_require__(163);
-/**
- * Install Sonar Scanner
- */
-function install() {
-    return __awaiter(this, void 0, void 0, function* () {
-        // Download the archive
-        const downloadLink = utils_1.getDownloadLink();
-        const downloadPath = yield tc.downloadTool(downloadLink);
-        const extractionPath = path_1.resolve(utils_1.getSonarScannerDirectory(), '..');
-        const versionedDirectory = path_1.resolve(extractionPath, `sonar-scanner-${core.getInput('version')}`);
-        // Extract, normalize and register binaries
-        yield tc.extractZip(downloadPath, extractionPath);
-        fs_1.renameSync(versionedDirectory, utils_1.getSonarScannerDirectory());
-        core.addPath(path_1.resolve(utils_1.getSonarScannerDirectory(), 'bin'));
-        // Add default options
-        if (core.getInput('options').length > 0) {
-            fs_1.appendFileSync(path_1.resolve(utils_1.getSonarScannerDirectory(), 'conf', 'sonar-scanner.properties'), core.getInput('options'));
-        }
-        // Install TypeScript if necessary
-        if (core.getInput('unshallow').toLowerCase() === 'true') {
-            yield exec.exec('git fetch --unshallow');
-        }
-        // Install TypeScript if necessary
-        if (core.getInput('typescript').toLowerCase() === 'true') {
-            yield exec.exec('npm install typescript --no-package-lock --no-save');
-        }
-        // Run Sonar Scanner
-        if (core.getInput('scan').toLowerCase() === 'true') {
-            const args = core.getInput('args').split(' ');
-            yield utils_1.sonar(args);
-        }
-    });
-}
-exports.install = install;
-install()
-    .then(() => {
-    core.info('Installation succeeded');
-})
-    .catch(e => {
-    core.error('Installation failed');
-    core.setFailed(e.message);
-});
-
-
-/***/ }),
-
 /***/ 669:
 /***/ (function(module) {
 
@@ -3949,6 +3983,22 @@ function isUnixExecutable(stats) {
 
 /***/ }),
 
+/***/ 694:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var _a;
+Object.defineProperty(exports, "__esModule", { value: true });
+const path_1 = __webpack_require__(622);
+exports.INSTALL_DIRECTORY = 'sonar-scanner-cli';
+exports.UBUNTU_INSTALL_PATH = `/usr/lib/${exports.INSTALL_DIRECTORY}`;
+exports.MACOS_INSTALL_PATH = path_1.resolve((_a = process.env.HOME, (_a !== null && _a !== void 0 ? _a : process.cwd())), exports.INSTALL_DIRECTORY);
+exports.WINDOWS_INSTALL_PATH = `C:\\Program Files\\${exports.INSTALL_DIRECTORY}`;
+
+
+/***/ }),
+
 /***/ 722:
 /***/ (function(module) {
 
@@ -3976,6 +4026,105 @@ function bytesToUuid(buf, offset) {
 }
 
 module.exports = bytesToUuid;
+
+
+/***/ }),
+
+/***/ 725:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const core = __importStar(__webpack_require__(470));
+const exec = __importStar(__webpack_require__(986));
+const io = __importStar(__webpack_require__(1));
+const tc = __importStar(__webpack_require__(533));
+const path_1 = __webpack_require__(622);
+const constants_1 = __webpack_require__(694);
+const utils_1 = __webpack_require__(163);
+/**
+ * Get the Sonar Scanner CLI download link.
+ * The link depends of the requested version and if the installation requires the JRE.
+ */
+function getDownloadLink() {
+    const version = core.getInput('version');
+    const withJre = core.getInput('with-jre').toLowerCase() === 'true';
+    const base = 'https://binaries.sonarsource.com/Distribution/sonar-scanner-cli';
+    let suffix = '';
+    if (withJre) {
+        if (utils_1.isUbuntu()) {
+            suffix += '-linux';
+        }
+        else if (utils_1.isMacOS()) {
+            suffix += '-macosx';
+        }
+        else if (utils_1.isWindows()) {
+            suffix += '-windows';
+        }
+    }
+    return `${base}/sonar-scanner-cli-${version}${suffix}.zip`;
+}
+exports.getDownloadLink = getDownloadLink;
+/**
+ * Get the Sonar Scanner installation directory.
+ */
+function getSonarScannerDirectory() {
+    if (utils_1.isUbuntu()) {
+        return constants_1.UBUNTU_INSTALL_PATH;
+    }
+    else if (utils_1.isMacOS()) {
+        return constants_1.MACOS_INSTALL_PATH;
+    }
+    else {
+        return constants_1.WINDOWS_INSTALL_PATH;
+    }
+}
+exports.getSonarScannerDirectory = getSonarScannerDirectory;
+/**
+ * Download the Sonar Scanner CLI archive.
+ */
+function download() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const downloadLink = getDownloadLink();
+        const downloadPath = yield tc.downloadTool(downloadLink);
+        const targetPath = getSonarScannerDirectory();
+        const extractionPath = path_1.resolve(targetPath, '..');
+        const extractedPath = `${extractionPath}/sonar-scanner-${core.getInput('version')}`;
+        if (!downloadLink.endsWith('.zip')) {
+            // Should never be reached
+            core.setFailed(`Unexpected extension (expected zip), but got ${downloadLink}`);
+        }
+        if (utils_1.isUbuntu()) {
+            // Ubuntu: Remove the existing installation of Google Cloud SDK
+            yield exec.exec(`sudo rm -rf ${constants_1.UBUNTU_INSTALL_PATH}`);
+            yield exec.exec(`sudo unzip ${downloadPath} -d ${extractionPath}`);
+            yield exec.exec(`sudo mv ${extractedPath} ${targetPath}`);
+        }
+        else {
+            // Windows and MacOS: simply extract zip file
+            yield tc.extractZip(downloadPath, extractionPath);
+            yield io.mv(extractedPath, targetPath);
+        }
+    });
+}
+exports.download = download;
 
 
 /***/ }),

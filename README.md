@@ -1,4 +1,11 @@
 # @mathrix-education/sonar-scanner
+
+![Workflow status][workflow]
+![Latest release][latest-release]
+
+[workflow]: https://img.shields.io/github/workflow/status/mathrix-education/sonar-scanner/Tests?style=flat-square
+[latest-release]: https://img.shields.io/github/v/release/mathrix-education/sonar-scanner?label=latest%20release&style=flat-square
+
 Install the Sonar Scanner CLI in GitHub Actions workflow.
 
 This project is **not supported** by Sonar Cloud.
@@ -37,12 +44,25 @@ The supported operating systems matrix is the following:
 ### Inputs
 See [action.yml](action.yml) for details.
 
+| Name                  | Type                           | Default value |
+|-----------------------|--------------------------------|---------------|
+| `version`             | `'latest'` / `string`          |               |
+| `with-jre`            | `true` / `false`               | `false`       |
+| `options`             | `string`                       | `''`          |
+| `typescript`          | `true` / `false`               | `false`       |
+| `unshallow`           | `true` / `false`               | `false`       |
+| `scan`                | `true` / `false`               | `false`       |
+| `args`                | `string`                       | `''`          |
+
 #### version
 The `version` is required since it is used to download Sonar Scanner.
 You can find the available versions on the official Sonar Scanner
 [repository][3.2]
 
 [3.2]: https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/
+
+#### with-jre
+Use the bundled JRE in the Sonar Scanner CLI archive.
 
 #### options
 The `options` input will set the default sonar-project.properties values
@@ -62,7 +82,7 @@ Additional flags to append to the `sonar-scanner` command. It will be
 ignored if `scan` is set to `false`.
 
 ### Examples
-To analyse the repository, we would add the following code to our
+To analyse this repository, we would add the following code to our
 workflow:
 
 ```yaml
@@ -71,5 +91,5 @@ workflow:
     version: 4.2.0.1873 # required
     typescript: true
     scan: true
-    args: --debug
+    args: --debug -Dsonar.login=${{ secrets.SONAR_TOKEN }}
 ```

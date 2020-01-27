@@ -11,6 +11,10 @@ inputs:
   version:
     description: The Sonar Scanner version.
     required: true
+  with-jre:
+    description: Use the bundled JRE.
+    required: false
+    default: 'false'
   options:
     description: Default Sonar Scanner options. Read as a YAML document (you may use the pipe '|' YAML operator).
     required: false
@@ -19,15 +23,15 @@ inputs:
       Install TypeScript during setup (simply run `npm i typescript`). Required if your project uses Typescript and if
       the node module `typescript` is  not already installed.
     required: false
-    default: false
-  scan:
-    description: Run Sonar Scanner immediately in the current working directory.
-    required: false
-    default: false
+    default: 'false'
   unshallow:
     description: Fetch a full clone of the repository. Useful when using the SCM feature of Sonar Scanner.
     required: false
-    default: false
+    default: 'false'
+  scan:
+    description: Run Sonar Scanner immediately in the current working directory.
+    required: false
+    default: 'false'
   args:
     description: Additionnal flag to append during the scan. Ignored if `scan` is false.
     required: false

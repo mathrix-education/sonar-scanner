@@ -7,12 +7,20 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        version: [4.2.0.1873]
+        with-jre: ['false', 'true']
+        version: ['4.2.0.1873']
+        exclude:
+          - os: macos-latest
+            with-jre: 'false'
+            version: '4.2.0.1873'
+          - os: windows-latest
+            with-jre: 'false'
+            version: '4.2.0.1873'
       fail-fast: false
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
       - name: Extract context
         if: matrix.os == 'ubuntu-latest'
         id: context
@@ -39,7 +47,7 @@ jobs:
             sonar.login=no token
           INPUT_UNSHALLOW: ${{ matrix.os == 'ubuntu-latest' }}
           INPUT_TYPESCRIPT: ${{ matrix.os == 'ubuntu-latest' }}
-          INPUT_SCAN: ${{ matrix.os == 'ubuntu-latest' }}
+          INPUT_SCAN: ${{ matrix.os == 'ubuntu-latest' && matrix.with-jre }}
           INPUT_ARGS: >-
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
             -Dsonar.host.url=${{ secrets.SONAR_HOST }}
