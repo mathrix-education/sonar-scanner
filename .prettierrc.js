@@ -3,4 +3,5 @@ module.exports = {
   quoteProps: 'as-needed',
   trailingComma: 'all',
   arrowParens: 'avoid',
+  printWidth: 120,
 };

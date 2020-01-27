@@ -1,7 +1,7 @@
 {
   "name": "@mathrix-education/sonar-scanner",
-  "version": "0.1.1",
-  "description": "Small GitHub action to install the Sonar Scanner on workflow.",
+  "version": "1.0.0",
+  "description": "Install the Sonar Scanner in GitHub Actions workflow.",
   "keywords": [
     "github-actions",
     "actions",
@@ -26,7 +26,7 @@
   },
   "scripts": {
     "format": "prettier --write \"src/**/*.ts\" \"*.js\"",
-    "build": "ncc build src/install.ts"
+    "build": "ncc build src/main.ts"
   },
   "dependencies": {
     "@actions/core": "^1.2.0",
